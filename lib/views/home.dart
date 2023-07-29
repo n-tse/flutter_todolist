@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:todolist/views/new_To_Do_Form.dart';
+import 'package:todolist/views/to_do_form.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> {
                         onSelected: (value) {
                           if (value == 'edit') {
                             // edit todo
+                            navigateToEditToDo(toDo);
                           } else {
                             deleteToDo(id);
                           }
@@ -93,7 +94,14 @@ class _HomePageState extends State<HomePage> {
 
   void navigateToAddToDo() {
     final route = MaterialPageRoute(
-      builder: (context) => NewToDoForm(fetchToDos: fetchToDos),
+      builder: (context) => ToDoForm(fetchToDos: fetchToDos),
+    );
+    Navigator.push(context, route);
+  }
+
+  void navigateToEditToDo(Map toDo) {
+    final route = MaterialPageRoute(
+      builder: (context) => ToDoForm(fetchToDos: fetchToDos, toDoItem: toDo),
     );
     Navigator.push(context, route);
   }

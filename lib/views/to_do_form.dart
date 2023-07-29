@@ -4,19 +4,39 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class NewToDoForm extends StatefulWidget {
+class ToDoForm extends StatefulWidget {
   final void Function() fetchToDos;
-  const NewToDoForm({Key? key, required this.fetchToDos}) : super(key: key);
-  // const NewToDoForm({super.key});
+  final Map? toDoItem;
+
+  const ToDoForm({
+    Key? key,
+    required this.fetchToDos,
+    this.toDoItem,
+  }) : super(key: key);
+  // const ToDoForm({super.key});
 
   @override
-  State<NewToDoForm> createState() => _NewToDoFormState();
+  State<ToDoForm> createState() => _ToDoFormState();
 }
 
-class _NewToDoFormState extends State<NewToDoForm> {
+class _ToDoFormState extends State<ToDoForm> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   bool isLoading = false;
+  bool isEditMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final toDoItem = widget.toDoItem;
+    if (toDoItem != null) {
+      isEditMode = true;
+      final title = toDoItem['title'];
+      final description = toDoItem['description'];
+      titleController.text = title;
+      descriptionController.text = description;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +53,7 @@ class _NewToDoFormState extends State<NewToDoForm> {
               Navigator.pop(context);
             },
           ),
-          title: const Text("Add New To Do"),
+          title: Text(isEditMode ? "Edit To Do" : "Add New To Do"),
           centerTitle: true,
         ),
         body: ListView(
@@ -61,14 +81,14 @@ class _NewToDoFormState extends State<NewToDoForm> {
               height: 20,
             ),
             ElevatedButton(
-              onPressed: addToDo,
+              onPressed: isEditMode ? updateToDo : addToDo,
               child: isLoading
                   ? const SizedBox(
                       width: 25, // Adjust the width of the progress indicator
                       height: 25, // Adjust the height of the progress indicator
                       child: CircularProgressIndicator(),
                     )
-                  : const Text("Add To Do"),
+                  : Text(isEditMode ? "Update" : "Add To Do"),
             )
           ],
         ),
@@ -111,7 +131,7 @@ class _NewToDoFormState extends State<NewToDoForm> {
 
       // update to dos list
       // 'widget' allows us to access properties/methods located within the parent widget instance
-      // in this case, the parent widget is 'HomePage', and the child widget is 'NewToDoForm'
+      // in this case, the parent widget is 'HomePage', and the child widget is 'ToDoForm'
       widget.fetchToDos();
     } else {
       displayMessage("Failed to add to do");
@@ -123,6 +143,10 @@ class _NewToDoFormState extends State<NewToDoForm> {
 
     // hides keyboard
     FocusScope.of(context).unfocus();
+  }
+
+  Future<void> updateToDo() async {
+
   }
 
   void displayMessage(String message) {
