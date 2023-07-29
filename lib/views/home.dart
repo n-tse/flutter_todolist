@@ -43,10 +43,39 @@ class _HomePageState extends State<HomePage> {
               itemCount: toDos.length,
               itemBuilder: (context, index) {
                 final toDo = toDos[index] as Map;
+                final id = toDo['_id'] as String;
                 return ListTile(
                   // leading: CircleAvatar(child: Text((index + 1).toString())),
                   title: Text(toDo['title']),
                   subtitle: Text(toDo['description']),
+                  trailing: Column(
+                    // display the PopupMenuButton items vertically (default displays horizontally)
+                    mainAxisSize: MainAxisSize
+                        .min, // Ensure the Column takes the minimum vertical space
+                    children: [
+                      PopupMenuButton(
+                        onSelected: (value) {
+                          if (value == 'edit') {
+                            // edit todo
+                          } else {
+                            deleteToDo(id);
+                          }
+                        },
+                        itemBuilder: (context) {
+                          return [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Text('Edit'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Text('Delete'),
+                            ),
+                          ];
+                        },
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
@@ -83,5 +112,20 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       initialLoad = false;
     });
+  }
+
+  Future<void> deleteToDo(String id) async {
+    final url = 'https://api.nstack.in/v1/todos/$id';
+    final uri = Uri.parse(url);
+    final response = await http.delete(uri);
+    if (response.statusCode == 200) {
+      final filtered = toDos.where((element) => element['_id'] != id).toList();
+      setState(() {
+        toDos = filtered;
+      });
+    } else {
+      const snackBar = SnackBar(content: Text("Error: unable to delete"));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 }
