@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todolist/views/new_To_Do_Form.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,10 +22,17 @@ class _HomePageState extends State<HomePage> {
       ),
       body: const Center(child: Text("To Do List Content")),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: navigateToAddToDo,
         label: const Icon(Icons.add),
         shape: const CircleBorder(),
       ),
     );
+  }
+
+  void navigateToAddToDo() {
+    final route = MaterialPageRoute(
+      builder: (context) => const NewToDoForm(),
+    );
+    Navigator.push(context, route);
   }
 }
