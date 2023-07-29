@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
 
   void navigateToAddToDo() {
     final route = MaterialPageRoute(
-      builder: (context) => const NewToDoForm(),
+      builder: (context) => NewToDoForm(fetchToDos: fetchToDos),
     );
     Navigator.push(context, route);
   }
