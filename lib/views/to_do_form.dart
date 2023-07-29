@@ -24,6 +24,7 @@ class _ToDoFormState extends State<ToDoForm> {
   TextEditingController descriptionController = TextEditingController();
   bool isLoading = false;
   bool isEditMode = false;
+  String id = '';
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _ToDoFormState extends State<ToDoForm> {
       final description = toDoItem['description'];
       titleController.text = title;
       descriptionController.text = description;
+      id = toDoItem['_id'];
     }
   }
 
@@ -81,7 +83,7 @@ class _ToDoFormState extends State<ToDoForm> {
               height: 20,
             ),
             ElevatedButton(
-              onPressed: isEditMode ? updateToDo : addToDo,
+              onPressed: isEditMode ? () => updateToDo(id) : addToDo,
               child: isLoading
                   ? const SizedBox(
                       width: 25, // Adjust the width of the progress indicator
@@ -145,8 +147,41 @@ class _ToDoFormState extends State<ToDoForm> {
     FocusScope.of(context).unfocus();
   }
 
-  Future<void> updateToDo() async {
+  Future<void> updateToDo(String itemId) async {
+    setState(() {
+      isLoading = true;
+    });
 
+    final title = titleController.text;
+    final description = descriptionController.text;
+    final updatedToDo = {
+      "title": title,
+      "description": description,
+      "is_completed": false,
+    };
+
+    final url = 'https://api.nstack.in/v1/todos/$itemId';
+    final uri = Uri.parse(url);
+    final response = await http.put(
+      uri,
+      body: jsonEncode(updatedToDo),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      displayMessage("Updated successfully");
+      widget.fetchToDos();
+    } else {
+      displayMessage("Failed to update to do");
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+
+    FocusScope.of(context).unfocus();
   }
 
   void displayMessage(String message) {
