@@ -12,6 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List toDos = [];
+  bool initialLoad = true;
 
   // like useEffect hook
   @override
@@ -31,15 +32,27 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: ListView.builder(
-        itemCount: toDos.length,
-        itemBuilder: (context, index) {
-          final toDo = toDos[index] as Map;
-          return ListTile(
-            title: Text(toDo['title']),
-            subtitle: Text(toDo['description']),
-          );
-        },
+      // if visible = true, display child. Otherwise, display replacement
+      body: Visibility(
+        visible: initialLoad,
+        replacement: RefreshIndicator(
+          onRefresh: fetchToDos,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: ListView.builder(
+              itemCount: toDos.length,
+              itemBuilder: (context, index) {
+                final toDo = toDos[index] as Map;
+                return ListTile(
+                  // leading: CircleAvatar(child: Text((index + 1).toString())),
+                  title: Text(toDo['title']),
+                  subtitle: Text(toDo['description']),
+                );
+              },
+            ),
+          ),
+        ),
+        child: const Center(child: CircularProgressIndicator()),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: navigateToAddToDo,
@@ -67,5 +80,8 @@ class _HomePageState extends State<HomePage> {
         toDos = items;
       });
     }
+    setState(() {
+      initialLoad = false;
+    });
   }
 }
