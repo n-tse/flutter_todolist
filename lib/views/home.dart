@@ -54,12 +54,16 @@ class _HomePageState extends State<HomePage> {
                         .min, // Ensure the Column takes the minimum vertical space
                     children: [
                       PopupMenuButton(
-                        onSelected: (value) {
+                        onSelected: (value) async {
                           if (value == 'edit') {
                             // edit todo
                             navigateToEditToDo(toDo);
                           } else {
-                            deleteToDo(id);
+                            bool? confirmed =
+                                await showDeleteConfirmation(context);
+                            if (confirmed == true) {
+                              deleteToDo(id);
+                            }
                           }
                         },
                         itemBuilder: (context) {
@@ -70,7 +74,10 @@ class _HomePageState extends State<HomePage> {
                             ),
                             const PopupMenuItem(
                               value: 'delete',
-                              child: Text('Delete'),
+                              child: Text(
+                                'Delete',
+                                style: TextStyle(color: Colors.red),
+                              ),
                             ),
                           ];
                         },
@@ -136,4 +143,32 @@ class _HomePageState extends State<HomePage> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
+
+  Future<bool?> showDeleteConfirmation(BuildContext context) async {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: const Text('Are you sure you want to delete this To Do?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () =>
+                  Navigator.of(context).pop(false), // User canceled
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () =>
+                  Navigator.of(context).pop(true), // User confirmed
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  
 }
