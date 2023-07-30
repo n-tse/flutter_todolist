@@ -5,7 +5,8 @@ import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   final void Function(bool value) toggleTheme;
-  const HomePage({Key? key, required this.toggleTheme}) : super(key: key);
+  final bool isDarkMode;
+  const HomePage({Key? key, required this.toggleTheme, required this.isDarkMode}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -63,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                 final id = toDo['_id'] as String;
                 return Card(
                   elevation: 4.0,
-                  color: Colors.amberAccent[100],
+                  color: widget.isDarkMode? null : Colors.amberAccent[100],
                   child: ListTile(
                     // leading: CircleAvatar(child: Text((index + 1).toString())),
                     title: Text(

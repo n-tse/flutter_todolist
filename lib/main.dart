@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
       title: 'To Do List',
       debugShowCheckedModeBanner: false,
       theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
-      home: HomePage(toggleTheme: toggleTheme),
+      home: HomePage(toggleTheme: toggleTheme, isDarkMode: isDarkMode),
     );
   }
 }
