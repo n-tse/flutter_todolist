@@ -1,8 +1,9 @@
 // ignore_for_file: file_names
 
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+// import 'dart:convert';
+// import 'package:http/http.dart' as http;
+import 'package:todolist/api/todo_api.dart';
 
 class ToDoForm extends StatefulWidget {
   final void Function() fetchToDos;
@@ -93,7 +94,10 @@ class _ToDoFormState extends State<ToDoForm> {
                       height: 25, // Adjust the height of the progress indicator
                       child: CircularProgressIndicator(),
                     )
-                  : Text(isEditMode ? "Update" : "Add To Do", style: const TextStyle(fontSize: 18.0),),
+                  : Text(
+                      isEditMode ? "Update" : "Add To Do",
+                      style: const TextStyle(fontSize: 18.0),
+                    ),
             )
           ],
         ),
@@ -102,6 +106,91 @@ class _ToDoFormState extends State<ToDoForm> {
   }
 
   // get data from form and send to server
+  // Future<void> addToDo() async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+
+  //   final title = titleController.text;
+  //   final description = descriptionController.text;
+  //   final newToDo = {
+  //     "title": title,
+  //     "description": description,
+  //     "is_completed": false,
+  //   };
+
+  //   const url = "https://api.nstack.in/v1/todos";
+  //   final uri = Uri.parse(url);
+  //   final response = await http.post(
+  //     uri,
+  //     body: jsonEncode(newToDo),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   );
+
+  //   // final responseMap =
+  //   //     jsonDecode(response.body); // Parse the JSON response body
+  //   // final message = responseMap['message']; // Access the 'message' field
+
+  //   if (response.statusCode == 201) {
+  //     displayMessage("Added successfully");
+  //     titleController.text = "";
+  //     descriptionController.text = "";
+
+  //     // update to dos list
+  //     // 'widget' allows us to access properties/methods located within the parent widget instance
+  //     // in this case, the parent widget is 'HomePage', and the child widget is 'ToDoForm'
+  //     widget.fetchToDos();
+  //   } else {
+  //     displayMessage("Failed to add to do");
+  //   }
+
+  //   setState(() {
+  //     isLoading = false;
+  //   });
+
+  //   // hides keyboard
+  //   FocusScope.of(context).unfocus();
+  // }
+
+  // Future<void> updateToDo(String itemId) async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+
+  //   final title = titleController.text;
+  //   final description = descriptionController.text;
+  //   final updatedToDo = {
+  //     "title": title,
+  //     "description": description,
+  //     "is_completed": false,
+  //   };
+
+  //   final url = 'https://api.nstack.in/v1/todos/$itemId';
+  //   final uri = Uri.parse(url);
+  //   final response = await http.put(
+  //     uri,
+  //     body: jsonEncode(updatedToDo),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     displayMessage("Updated successfully");
+  //     widget.fetchToDos();
+  //   } else {
+  //     displayMessage("Failed to update to do");
+  //   }
+
+  //   setState(() {
+  //     isLoading = false;
+  //   });
+
+  //   FocusScope.of(context).unfocus();
+  // }
+
   Future<void> addToDo() async {
     setState(() {
       isLoading = true;
@@ -115,30 +204,13 @@ class _ToDoFormState extends State<ToDoForm> {
       "is_completed": false,
     };
 
-    const url = "https://api.nstack.in/v1/todos";
-    final uri = Uri.parse(url);
-    final response = await http.post(
-      uri,
-      body: jsonEncode(newToDo),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
-
-    // final responseMap =
-    //     jsonDecode(response.body); // Parse the JSON response body
-    // final message = responseMap['message']; // Access the 'message' field
-
-    if (response.statusCode == 201) {
+    try {
+      await TodoApi.addToDo(newToDo); // Use the static method from TodoApi
       displayMessage("Added successfully");
       titleController.text = "";
       descriptionController.text = "";
-
-      // update to dos list
-      // 'widget' allows us to access properties/methods located within the parent widget instance
-      // in this case, the parent widget is 'HomePage', and the child widget is 'ToDoForm'
       widget.fetchToDos();
-    } else {
+    } catch (e) {
       displayMessage("Failed to add to do");
     }
 
@@ -146,7 +218,6 @@ class _ToDoFormState extends State<ToDoForm> {
       isLoading = false;
     });
 
-    // hides keyboard
     FocusScope.of(context).unfocus();
   }
 
@@ -163,20 +234,12 @@ class _ToDoFormState extends State<ToDoForm> {
       "is_completed": false,
     };
 
-    final url = 'https://api.nstack.in/v1/todos/$itemId';
-    final uri = Uri.parse(url);
-    final response = await http.put(
-      uri,
-      body: jsonEncode(updatedToDo),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
+    try {
+      await TodoApi.updateToDo(
+          itemId, updatedToDo); // Use the static method from TodoApi
       displayMessage("Updated successfully");
       widget.fetchToDos();
-    } else {
+    } catch (e) {
       displayMessage("Failed to update to do");
     }
 

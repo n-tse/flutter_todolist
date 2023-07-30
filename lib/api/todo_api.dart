@@ -1,5 +1,3 @@
-// api/todo_api.dart
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -22,6 +20,43 @@ class TodoApi {
     final response = await http.delete(uri);
     if (response.statusCode != 200) {
       throw Exception('Error: Unable to delete the ToDo item.');
+    }
+  }
+
+  static Future<void> addToDo(Map<String, dynamic> newToDo) async {
+    const url = "https://api.nstack.in/v1/todos";
+    final uri = Uri.parse(url);
+    final response = await http.post(
+      uri,
+      body: jsonEncode(newToDo),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 201) {
+      return;
+    } else {
+      throw Exception("Failed to add to-do");
+    }
+  }
+
+  static Future<void> updateToDo(
+      String itemId, Map<String, dynamic> updatedToDo) async {
+    final url = 'https://api.nstack.in/v1/todos/$itemId';
+    final uri = Uri.parse(url);
+    final response = await http.put(
+      uri,
+      body: jsonEncode(updatedToDo),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return;
+    } else {
+      throw Exception("Failed to update to-do");
     }
   }
 }
