@@ -4,7 +4,8 @@ import 'package:todolist/views/to_do_form.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final void Function(bool value) toggleTheme;
+  const HomePage({Key? key, required this.toggleTheme}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -25,15 +26,21 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "To Do List",
-              style: TextStyle(fontSize: 25),
-            ),
-          ],
+        title: const Text(
+          "To Do List",
+          style: TextStyle(fontSize: 25),
         ),
+        centerTitle: true,
+        actions: [
+          Switch(
+              value: Theme.of(context).brightness == Brightness.dark,
+              onChanged: (value) {
+                setState(() {
+                  // Call the callback function to update the theme mode in MyApp
+                  widget.toggleTheme(value);
+                });
+              })
+        ],
       ),
       // if visible = true, display child. Otherwise, display replacement
       body: Visibility(
