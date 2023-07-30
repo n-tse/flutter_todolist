@@ -1,12 +1,15 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:todolist/views/to_do_form.dart';
-import 'package:http/http.dart' as http;
+// import 'dart:convert';
+// import 'package:http/http.dart' as http;
+import 'package:todolist/api/todo_api.dart';
 
 class HomePage extends StatefulWidget {
   final void Function(bool value) toggleTheme;
   final bool isDarkMode;
-  const HomePage({Key? key, required this.toggleTheme, required this.isDarkMode}) : super(key: key);
+  const HomePage(
+      {Key? key, required this.toggleTheme, required this.isDarkMode})
+      : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -64,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                 final id = toDo['_id'] as String;
                 return Card(
                   elevation: 4.0,
-                  color: widget.isDarkMode? null : Colors.amberAccent[100],
+                  color: widget.isDarkMode ? null : Colors.amberAccent[100],
                   child: ListTile(
                     // leading: CircleAvatar(child: Text((index + 1).toString())),
                     title: Text(
@@ -147,35 +150,61 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchToDos() async {
-    const url = 'https://api.nstack.in/v1/todos?page=1&limit=10';
-    final uri = Uri.parse(url);
-    final response = await http.get(uri);
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body) as Map;
-      final items = json['items'] as List;
+    try {
+      final toDos = await TodoApi.fetchToDos();
       setState(() {
-        toDos = items;
+        this.toDos = toDos;
+      });
+    } catch (e) {
+      // Handle error (e.g., show an error message to the user)
+    } finally {
+      setState(() {
+        initialLoad = false;
       });
     }
-    setState(() {
-      initialLoad = false;
-    });
   }
 
   Future<void> deleteToDo(String id) async {
-    final url = 'https://api.nstack.in/v1/todos/$id';
-    final uri = Uri.parse(url);
-    final response = await http.delete(uri);
-    if (response.statusCode == 200) {
-      final filtered = toDos.where((element) => element['_id'] != id).toList();
+    try {
+      await TodoApi.deleteToDo(id);
       setState(() {
-        toDos = filtered;
+        toDos.removeWhere((element) => element['_id'] == id);
       });
-    } else {
-      const snackBar = SnackBar(content: Text("Error: unable to delete"));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } catch (e) {
+      // Handle error (e.g., show an error message to the user)
     }
   }
+
+  // Future<void> fetchToDos() async {
+  //   const url = 'https://api.nstack.in/v1/todos?page=1&limit=10';
+  //   final uri = Uri.parse(url);
+  //   final response = await http.get(uri);
+  //   if (response.statusCode == 200) {
+  //     final json = jsonDecode(response.body) as Map;
+  //     final items = json['items'] as List;
+  //     setState(() {
+  //       toDos = items;
+  //     });
+  //   }
+  //   setState(() {
+  //     initialLoad = false;
+  //   });
+  // }
+
+  // Future<void> deleteToDo(String id) async {
+  //   final url = 'https://api.nstack.in/v1/todos/$id';
+  //   final uri = Uri.parse(url);
+  //   final response = await http.delete(uri);
+  //   if (response.statusCode == 200) {
+  //     final filtered = toDos.where((element) => element['_id'] != id).toList();
+  //     setState(() {
+  //       toDos = filtered;
+  //     });
+  //   } else {
+  //     const snackBar = SnackBar(content: Text("Error: unable to delete"));
+  //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  //   }
+  // }
 
   Future<bool?> showDeleteConfirmation(BuildContext context) async {
     return showDialog<bool>(
