@@ -55,7 +55,10 @@ class _ToDoFormState extends State<ToDoForm> {
               Navigator.pop(context);
             },
           ),
-          title: Text(isEditMode ? "Edit To Do" : "Add New To Do"),
+          title: Text(
+            isEditMode ? "Edit To Do" : "Add New To Do",
+            style: const TextStyle(fontSize: 25),
+          ),
           centerTitle: true,
         ),
         body: ListView(
@@ -90,7 +93,7 @@ class _ToDoFormState extends State<ToDoForm> {
                       height: 25, // Adjust the height of the progress indicator
                       child: CircularProgressIndicator(),
                     )
-                  : Text(isEditMode ? "Update" : "Add To Do"),
+                  : Text(isEditMode ? "Update" : "Add To Do", style: const TextStyle(fontSize: 18.0),),
             )
           ],
         ),

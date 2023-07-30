@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("To Do List"),
+            Text("To Do List", style: TextStyle(fontSize: 25),),
           ],
         ),
       ),
@@ -37,17 +37,19 @@ class _HomePageState extends State<HomePage> {
         visible: initialLoad,
         replacement: RefreshIndicator(
           onRefresh: fetchToDos,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: ListView.builder(
-              itemCount: toDos.length,
-              itemBuilder: (context, index) {
-                final toDo = toDos[index] as Map;
-                final id = toDo['_id'] as String;
-                return ListTile(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(8.0),
+            itemCount: toDos.length,
+            itemBuilder: (context, index) {
+              final toDo = toDos[index] as Map;
+              final id = toDo['_id'] as String;
+              return Card(
+                elevation: 4.0,
+                color: Colors.amberAccent[100],
+                child: ListTile(
                   // leading: CircleAvatar(child: Text((index + 1).toString())),
-                  title: Text(toDo['title']),
-                  subtitle: Text(toDo['description']),
+                  title: Text(toDo['title'], style: const TextStyle(fontSize: 22),),
+                  subtitle: Text(toDo['description'], style: const TextStyle(fontSize: 16)),
                   trailing: Column(
                     // display the PopupMenuButton items vertically (default displays horizontally)
                     mainAxisSize: MainAxisSize
@@ -84,17 +86,24 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ),
         child: const Center(child: CircularProgressIndicator()),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: navigateToAddToDo,
-        label: const Icon(Icons.add),
-        shape: const CircleBorder(),
+      // increases the size of the FAB
+      floatingActionButton: Transform.scale(
+        scale: 1.25,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FloatingActionButton.extended(
+            onPressed: navigateToAddToDo,
+            label: const Icon(Icons.add),
+            shape: const CircleBorder(),
+          ),
+        ),
       ),
     );
   }
