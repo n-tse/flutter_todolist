@@ -28,67 +28,83 @@ class _HomePageState extends State<HomePage> {
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("To Do List", style: TextStyle(fontSize: 25),),
+            Text(
+              "To Do List",
+              style: TextStyle(fontSize: 25),
+            ),
           ],
         ),
       ),
       // if visible = true, display child. Otherwise, display replacement
       body: Visibility(
         visible: initialLoad,
-        replacement: RefreshIndicator(
-          onRefresh: fetchToDos,
-          child: ListView.builder(
-            padding: const EdgeInsets.all(8.0),
-            itemCount: toDos.length,
-            itemBuilder: (context, index) {
-              final toDo = toDos[index] as Map;
-              final id = toDo['_id'] as String;
-              return Card(
-                elevation: 4.0,
-                color: Colors.amberAccent[100],
-                child: ListTile(
-                  // leading: CircleAvatar(child: Text((index + 1).toString())),
-                  title: Text(toDo['title'], style: const TextStyle(fontSize: 22),),
-                  subtitle: Text(toDo['description'], style: const TextStyle(fontSize: 16)),
-                  trailing: Column(
-                    // display the PopupMenuButton items vertically (default displays horizontally)
-                    mainAxisSize: MainAxisSize
-                        .min, // Ensure the Column takes the minimum vertical space
-                    children: [
-                      PopupMenuButton(
-                        onSelected: (value) async {
-                          if (value == 'edit') {
-                            // edit todo
-                            navigateToEditToDo(toDo);
-                          } else {
-                            bool? confirmed =
-                                await showDeleteConfirmation(context);
-                            if (confirmed == true) {
-                              deleteToDo(id);
+        replacement: Visibility(
+          visible: toDos.isNotEmpty,
+          replacement: const Center(
+            child: Text(
+              "No To Do Items",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
+            ),
+          ),
+          child: RefreshIndicator(
+            onRefresh: fetchToDos,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(8.0),
+              itemCount: toDos.length,
+              itemBuilder: (context, index) {
+                final toDo = toDos[index] as Map;
+                final id = toDo['_id'] as String;
+                return Card(
+                  elevation: 4.0,
+                  color: Colors.amberAccent[100],
+                  child: ListTile(
+                    // leading: CircleAvatar(child: Text((index + 1).toString())),
+                    title: Text(
+                      toDo['title'],
+                      style: const TextStyle(fontSize: 22),
+                    ),
+                    subtitle: Text(toDo['description'],
+                        style: const TextStyle(fontSize: 16)),
+                    trailing: Column(
+                      // display the PopupMenuButton items vertically (default displays horizontally)
+                      mainAxisSize: MainAxisSize
+                          .min, // Ensure the Column takes the minimum vertical space
+                      children: [
+                        PopupMenuButton(
+                          onSelected: (value) async {
+                            if (value == 'edit') {
+                              // edit todo
+                              navigateToEditToDo(toDo);
+                            } else {
+                              bool? confirmed =
+                                  await showDeleteConfirmation(context);
+                              if (confirmed == true) {
+                                deleteToDo(id);
+                              }
                             }
-                          }
-                        },
-                        itemBuilder: (context) {
-                          return [
-                            const PopupMenuItem(
-                              value: 'edit',
-                              child: Text('Edit'),
-                            ),
-                            const PopupMenuItem(
-                              value: 'delete',
-                              child: Text(
-                                'Delete',
-                                style: TextStyle(color: Colors.red),
+                          },
+                          itemBuilder: (context) {
+                            return [
+                              const PopupMenuItem(
+                                value: 'edit',
+                                child: Text('Edit'),
                               ),
-                            ),
-                          ];
-                        },
-                      ),
-                    ],
+                              const PopupMenuItem(
+                                value: 'delete',
+                                child: Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ];
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
         child: const Center(child: CircularProgressIndicator()),
@@ -179,5 +195,4 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-  
 }
