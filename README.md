@@ -25,6 +25,10 @@ The To-Do List app offers the following features:
 
 ## Demo
 
+
+https://github.com/n-tse/flutter_todolist/assets/101606128/42adc76e-6e1e-43d5-a7f3-5057ad90cbd7
+
+
 ## Tech Stack
 - Flutter
 - Dart\
